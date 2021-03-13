@@ -1,8 +1,7 @@
 
 import styled from 'styled-components';
-import React, {useMemo, useState, useEffect } from "react";
+import React, {useMemo, useState, useEffect, Component } from "react";
 import Table from "./Table.js";
-import axios from 'axios';
 
 const GridWrapper = styled.div`
 //   display: grid;
@@ -14,87 +13,63 @@ const GridWrapper = styled.div`
   grid-auto-rows: minmax(25px, auto);
 `; 
 
-// Custom component to render Genres 
-const Classification = ({ values }) => {
-    // Loop through the array and create a badge-like component instead of a comma-separated string
-    return (
-      <>
-        {values.map((genre, idx) => {
-          return (
-            <span key={idx} className="badge">
-              {genre}
-            </span>
-          );
-        })}
-      </>
-    );
-  };
 
+class Externships extends Component{
 
-function Externships() {
-    
-    const columns = useMemo(
-        () => [
-          {
-            // first group - TV Show
-            Header: "Externships",
-            // First group columns
-            columns: [
-              {
-                Header: "Company",
-                accessor: "externships.company"
-              },
-              {
-                Header: "Name",
-                accessor: "externships.program"
-              }
-            ]
-          },
-          {
-            // Second group - Details
-            Header: "Details",
-            // Second group columns
-            columns: [
-              {
-                Header: "Industry",
-                accessor: "externships.industry"
-              },
-              {
-                Header: "Classification",
-                accessor: "externships.classification",
-                // Cell method will provide the cell value; we pass it to render a custom component
-                Cell: ({ cell: { value } }) => <Classification values={value} />
-
-              },
-              {
-                Header: "Diversity",
-                accessor: "externships.diversity"
-                
-              },
-              {
-                Header: "Date",
-                accessor: "externships.date"
-              }
-            ]
-          }
-        ],
-        []
-      );
-    // data state to store the TV Maze API data. Its initial value is an empty array
-    const [data, setData] = useState([]);
-  
-    // Using useEffect to call the API once mounted and set the data
-    useEffect(() => {
-      (async () => {
-        const result = await axios("");
-        setData(result.data);
-      })();
-    }, []);
-    return (
-      <div className="Externships">
-          <Table columns={columns} data={data} />
-      </div>
-    );
+  constructor(props){
+    super(props)
+    this.state = {
+      externships: [],
+      isLoading: false,
+      isError: false
+    }
   }
+ // async function get request
+ async componentDidMount(){
+   this.setState({isLoading:true})
+
+   const response = await fetch("")
+
+   if(response.ok){
+     this.setState({externships, isloading:false})
+   }else{
+     this.setState({isError:true, isloading:false})
+   }
+ }
+
+ renderTableHeader = () => {
+    return  Object.keys(this.state.externships[0]).map(attr => <th key = {attr}></th> )
+
+ }
+ render(){
+   const {externships,isLoading, isError} = this.state
+
+   if(isLoading){
+    return <div>Loading...</div>
+   }
+   if(isError){
+     return<div>Error...</div>
+   }
+
+   return externships.length > 0
+   ?(
+
+    <table>
+      <thead>
+        <tr>
+          {this.renderTableHeader()}
+        </tr>
+      </thead>
+      <tbody>
+        {this.renderTableRow}
+      </tbody>
+    </table>
+   ):(
+     <div> No externships</div>
+   )
+
+ }
+
+}
 
   export default Externships;

@@ -42,11 +42,11 @@ function Externships() {
             columns: [
               {
                 Header: "Company",
-                accessor: "show.name"
+                accessor: "externships.company"
               },
               {
                 Header: "Name",
-                accessor: "show.type"
+                accessor: "externships.program"
               }
             ]
           },
@@ -57,23 +57,23 @@ function Externships() {
             columns: [
               {
                 Header: "Industry",
-                accessor: "show.language"
+                accessor: "externships.industry"
               },
               {
                 Header: "Classification",
-                accessor: "show.genres",
+                accessor: "externships.classification",
                 // Cell method will provide the cell value; we pass it to render a custom component
                 Cell: ({ cell: { value } }) => <Classification values={value} />
 
               },
               {
                 Header: "Diversity",
-                accessor: "show.runtime"
+                accessor: "externships.diversity"
                 
               },
               {
-                Header: "Status",
-                accessor: "show.status"
+                Header: "Date",
+                accessor: "externships.date"
               }
             ]
           }
@@ -86,7 +86,7 @@ function Externships() {
     // Using useEffect to call the API once mounted and set the data
     useEffect(() => {
       (async () => {
-        const result = await axios("https://api.tvmaze.com/search/shows?q=snow");
+        const result = await axios("");
         setData(result.data);
       })();
     }, []);

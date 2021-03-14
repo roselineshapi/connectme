@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from "react";
 import styled from 'styled-components';
-
 
 const GridWrapper = styled.div`
 //   display: grid;
@@ -12,57 +11,48 @@ const GridWrapper = styled.div`
   grid-auto-rows: minmax(25px, auto);
 `; 
 
-
-class ContactForm extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        name: '',
-        email: '',
-        message: ''
-      }
-    }
-  
-    render() {
+const ContactForm = () => {
+  const [status, setStatus] = useState("Submit");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("Sending...");
+    const {  email, subject, message } = e.target.elements;
+    let details = {
       
-      return(
-        
-        <div className="Contact">
-          <GridWrapper>
-          <form id="contact-form" onSubmit={this.handleSubmit.bind(this)} method="POST">
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input type="text" className="form-control" value={this.state.name} onChange={this.onNameChange.bind(this)} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="exampleInputEmail1">Email address</label>
-              <input type="email" className="form-control" aria-describedby="emailHelp" value={this.state.email} onChange={this.onEmailChange.bind(this)} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea className="form-control" rows="5" value={this.state.message} onChange={this.onMessageChange.bind(this)} />
-            </div>
-            <button type="submit" className="btn btn-primary">Submit</button>
-          </form>
-          </GridWrapper>
-        </div>
-      );
-    }
-  
-    onNameChange(event) {
-      this.setState({name: event.target.value})
-    }
-  
-    onEmailChange(event) {
-      this.setState({email: event.target.value})
-    }
-  
-    onMessageChange(event) {
-      this.setState({message: event.target.value})
-    }
-  
-    handleSubmit(event) {
-    }
-  }
-  
-  export default ContactForm;
+      email: email.value,
+      subject: subject.value,
+      message: message.value,
+    };
+    let response = await fetch("http://localhost:8080/contact/sendMessage", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify(details),
+    });
+    setStatus("Submit");
+    let result = await response.json();
+    alert(result.status);
+  };
+  return (
+    <GridWrapper>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="email">Email:</label>
+        <input type="email" id="email" required />
+      </div>
+      <div>
+        <label htmlFor="subject">Subject:</label>
+        <input type="email" id="email" required />
+      </div>
+      <div>
+        <label htmlFor="message">Message:</label>
+        <textarea id="message" required />
+      </div>
+      <button type="submit">{status}</button>
+    </form>
+    </GridWrapper>
+  );
+};
+
+export default ContactForm;
